@@ -1,6 +1,10 @@
+using Ktvg.Crm.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<KtvgCrmContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("KtvgCrmContext") ?? throw new InvalidOperationException("Connection string 'KtvgCrmContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -14,6 +18,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 var app = builder.Build();
+app.Initialize();
+app.UseItToSeedSqlServer();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

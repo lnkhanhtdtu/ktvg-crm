@@ -1,0 +1,408 @@
+﻿@model IEnumerable<Ktvg.Crm.Models.Customer>
+@{
+    ViewData["Title"] = "Danh sách khách hàng";
+}
+
+@* <select id="ProjectList" asp-items="ViewBag.ProjectList" class="form-control"> *@
+@*     <option disabled selected hidden>Tạo từ Đơn đặt mua hàng</option> *@
+@* </select> *@
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">
+                <button href="javascript:void(0)" 
+                        class="btn btn-outline-primary waves-effect" 
+                        data-bs-toggle="modal"
+                        data-bs-target="#installRegistrationModal">
+                    <i class="ri-add-circle-line"></i> &nbsp;Tạo mới
+                </button>
+                &nbsp;Khách hàng
+            </h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CustomerSource)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CustomerCode)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CustomerName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PhoneNumber)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CreatedDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Remark)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @{
+                            var index = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(index++)</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CustomerSource)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CustomerCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CustomerName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                </td>
+                                <td>
+                                    @item.CreatedDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Remark)
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            @foreach (var project in ViewBag.ProjectList)
+                                            {
+                                                <a class="dropdown-item" href="javascript:void(0);"><i class="@project.Icon.ToString()"></i> @project.Name.ToString()</a>
+                                            }
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class="dropdown-item" href="javascript:void(0);"><i class="ri-history-line"></i> Lịch sử tiếp xúc</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class="dropdown-item" href="javascript:void(0);"><i class="ri-edit-2-line text-warning"></i> Sửa </a>
+                                            <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line text-danger"></i> Xóa</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/ Basic Bootstrap Table -->
+
+    </div>
+</div>
+
+<!-- Modal Đăng ký mới-->
+@using (Html.BeginForm("SaveInstallationRegistration", "Customers", FormMethod.Post))
+{
+    <div class="modal fade" id="installRegistrationModal" tabindex="-1" aria-labelledby="installRegistrationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="installRegistrationModalLabel">TẠO MỚI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="form-group col-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="LocateType" id="LocateType1" value="1"
+                                       checked>
+                                <label class="form-check-label" for="LocateType1">
+                                    Đăng ký mới
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group col-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="LocateType" id="LocateType2" value="2">
+                                <label class="form-check-label" for="LocateType2">
+                                    Gia hạn
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="form-label fw-bold">Thông tin khách hàng</label>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text" class="form-control" id="CustomerName" name="CustomerName" placeholder="Ví dụ: Nguyễn Văn A" required>
+                                <label for="CustomerName">Tên khách hàng <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber"
+                                       placeholder="Ví dụ: 0818123456" required>
+                                <label for="PhoneNumber">
+                                    Số điện thoại (0xxxxxxxx)<span class="text-danger">*</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text" class="form-control" id="CustomerAddress" name="CustomerAddress"
+                                       placeholder="Ví dụ: 123 Nguyễn Văn Cừ, Quận 5, TP.HCM">
+                                <label for="CustomerAddress">Địa chỉ KH </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text" class="form-control" id="VehicleType" name="VehicleType"
+                                       placeholder="Ví dụ: Toyota Vios">
+                                <label for="VehicleType" >Tên dòng xe</label>
+                            </div>
+                        </div>
+
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text" class="form-control" id="VehicleNumber" name="VehicleNumber"
+                                   placeholder="Ví dụ: 50H12345" required>
+                            <label for="VehicleNumber" >
+                                Biển số xe / Số khung <span class="text-danger">*</span>
+                            </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="form-label fw-bold mt-3">Thông tin định vị</label>
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                            <input type="date" class="form-control" id="RegistrationDate" name="RegistrationDate" required>
+                            <label for="RegistrationDate" >
+                                Ngày lắp đặt <span class="text-danger">*</span>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <select class="form-select" id="DeviceInstalled" name="DeviceInstalled">
+                                    <option value="Taris" selected>Taris</option>
+                                    <option value="BA">BA</option>
+                                    <option value="TCT">TCT</option>
+                                </select>
+                                <label for="DeviceInstalled" >Thiết bị đang lắp</label>
+                            </div>
+                        </div>
+    
+                    </div>
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <select class="form-select" id="InstallationType" name="InstallationType">
+                                    <option value="GPS" selected>GPS</option>
+                                    <option value="Nghị định 10">Nghị định 10</option>
+                                </select>
+                                <label for="InstallationType">GPS / Nghị định 10</label>
+                            </div>
+                        </div>
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="number" class="form-control" id="PaymentAmount" name="PaymentAmount">
+                                <label for="PaymentAmount" >Số tiền thanh toán</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                               
+                        <textarea type="number" class="form-control" id="Remark" name="Remark" rows="3"></textarea>
+                        <label for="Remark" >Ghi chú</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="SendZaloConfirmation"
+                                   name="SendZaloConfirmation">
+                            <label class="form-check-label" for="SendZaloConfirmation">
+                                Gửi tin xác nhận thanh toán (Zalo)
+                                @* *@
+                                @* @if ((bool)ViewData["IsValidToken"]) *@
+                                @* { *@
+                                @*     <span class="text-success font-italic">(Đã kết nối Zalo OA)</span> *@
+                                @* } *@
+                                @* else *@
+                                @* { *@
+                                    <span class="text-danger font-italic">
+                                        (Cần kết nối Zalo OA
+                                        @* TODO: Cần xử lý lại link*@
+                                        <a class="fw-bold"
+                                           href="https://oauth.zaloapp.com/v4/oa/permission?app_id=2117687196653409715&redirect_uri=https%3A%2F%2Fktvinagroup.com%2Fadmin%2Fzalo%2Fcallback"
+                                           target="_blank">Kết nối</a>)
+                                    </span>
+                                // }
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-start">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        $('#installRegistrationModal').on('show.bs.modal', function (event) {
+            // Get today's date in YYYY-MM-DD format
+            var today = new Date().toISOString().slice(0, 10);
+
+            // Set default values
+            $('#RegistrationDate').val(today);
+            $('#CustomerName').val(''); // Clear any previous input
+            $('#PhoneNumber').val('');
+            $('#VehicleNumber').val('');
+            $('#SendZaloConfirmation').prop('checked', true).val(true); // Check the checkbox
+            $('#exampleFormControlTextarea1').val('');
+            $('#PaymentAmount').val(0);
+        });
+
+        $('#installRegistrationModal').find('.btn-primary').click(function () {
+            var isValid = true;
+            var errorMessage = "";
+
+            // Kiểm tra các trường bắt buộc
+            $('#installRegistrationModal .modal-body :input[required]').each(function () {
+                if ($(this).val() === '') {
+                    isValid = false;
+                    errorMessage += "Vui lòng nhập " + $(this).prev('label').text().trim() + "\n";
+                }
+            });
+
+            // Kiểm tra định dạng số điện thoại (ví dụ: chỉ cho phép số)
+            var PhoneNumber = $('#PhoneNumber').val();
+            if (!/^\d+$/.test(PhoneNumber)) {
+                isValid = false;
+                errorMessage += "Số điện thoại không hợp lệ. Vui lòng chỉ nhập số.\n";
+            }
+
+            // Kiểm tra số tiền thanh toán (nếu có nhập) là số dương
+            var PaymentAmount = $('#PaymentAmount').val();
+            if (PaymentAmount !== '' && (!$.isNumeric(PaymentAmount) || parseFloat(PaymentAmount) < 0)) {
+                isValid = false;
+                errorMessage += "Số tiền thanh toán phải là số dương.\n";
+            }
+
+            if (isValid) {
+                // Nếu tất cả các trường hợp lệ, bạn có thể gửi dữ liệu đi hoặc thực hiện các hành động khác ở đây
+                // alert("Dữ liệu đã được xác thực và sẵn sàng để lưu!");
+            } else {
+                event.preventDefault(); // Chặn không cho thực hiện submit form
+                alert(errorMessage);
+            }
+        });
+
+        $(document).ready(function () {
+
+            const $sendZaloCheckbox = $('#SendZaloConfirmation');
+
+            $sendZaloCheckbox.change(function () {
+                $(this).val(!$(this).is(':checked'));
+            });
+
+
+            // $("#sendSmsButton").click(function() {
+
+            //     alert("Chưa có mẫu tin nhắn. Vui lòng cập nhật");
+            //     return;
+
+            //     var selectedCustomerIds = [];
+            //     $("input[name='selectedCustomers']:checked").each(function() {
+            //         selectedCustomerIds.push($(this).val());
+            //     });
+
+            //     if (selectedCustomerIds.length === 0) {
+            //         alert("Vui lòng chọn ít nhất một khách hàng.");
+            //         return;
+            //     }
+
+            //     $.ajax({
+            //         url: '@Url.Action("SendRenewalReminderMessages")', // Địa chỉ của action method trong controller để lấy chi tiết ngân hàng
+            //         type: 'POST',
+            //         data: { customerIds: selectedCustomerIds },
+            //         success: function(response) {
+            //             // Xử lý phản hồi từ server (ví dụ: hiển thị thông báo thành công hoặc lỗi)
+            //             alert(response);
+            //         },
+            //         error: function() {
+            //             alert("Đã xảy ra lỗi khi gửi SMS.");
+            //         }
+            //     });
+            // });
+
+            $('input[name="LocateType"]').change(function () {
+                var paymentAmount = $(this).val() === '1' ? 0 : 960000;
+                $('#PaymentAmount').val(paymentAmount);
+            });
+
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const customerCheckboxes = document.querySelectorAll('input[name="selectedCustomers"]');
+
+            selectAllCheckbox.addEventListener('click', () => {
+                customerCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+
+                var selectedCustomerIds = [];
+                $("input[name='selectedCustomers']:checked").each(function() {
+                    selectedCustomerIds.push($(this).val());
+                });
+
+                $("#sendSmsButton").text(selectedCustomerIds.length === 0 ? "Nhắc nhở gia hạn" : "Nhắc nhở gia hạn (" + selectedCustomerIds.length + ")");
+            });
+
+            // Bắt sự kiện click cho checkbox có class 'selectedCustomers'
+            $('.selectedCustomers').on('click', function() {
+                var selectedCustomerIds = [];
+                $("input[name='selectedCustomers']:checked").each(function() {
+                    selectedCustomerIds.push($(this).val());
+                });
+
+                $("#sendSmsButton").text(selectedCustomerIds.length === 0 ? "Nhắc nhở gia hạn" : "Nhắc nhở gia hạn (" + selectedCustomerIds.length + ")");
+                // if($(this).is(':checked')) {
+                //     // Checkbox được chọn
+                //     console.log("Checkbox ID " + $(this).val() + " đã được chọn.");
+                // } else {
+                //     // Checkbox bỏ chọn
+                //     console.log("Checkbox ID " + $(this).val() + " đã bị bỏ chọn.");
+                // }
+            });
+        });
+    </script>
+}
