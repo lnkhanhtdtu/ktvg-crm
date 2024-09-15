@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
     <Folder Include="wwwroot\Content\assets\img\icons\unicons\" />
     <Folder Include="wwwroot\Content\assets\json\" />
     <Folder Include="wwwroot\Content\assets\svg\" />
