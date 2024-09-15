@@ -1,0 +1,152 @@
+﻿            <!-- Content -->
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-md-12">
+            @* <div class="nav-align-top"> *@
+            @*     <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-2 gap-lg-0"> *@
+            @*         <li class="nav-item"> *@
+            @*             <a class="nav-link active" href="javascript:void(0);"><i class="ri-group-line me-1_5"></i>Account</a> *@
+            @*         </li> *@
+            @*         <li class="nav-item"> *@
+            @*             <a class="nav-link" href="pages-account-settings-notifications.html"><i class="ri-notification-4-line me-1_5"></i>Notifications</a> *@
+            @*         </li> *@
+            @*         <li class="nav-item"> *@
+            @*             <a class="nav-link" href="pages-account-settings-connections.html"><i class="ri-link-m me-1_5"></i>Connections</a> *@
+            @*         </li> *@
+            @*     </ul> *@
+            @* </div> *@
+            <div class="card mb-6">
+                <!-- Account -->
+                <div class="card-body">
+                    <div class="d-flex align-items-start align-items-sm-center gap-6">
+                        <img src="~/Content/assets/img/avatars/1.png"
+                             alt="user-avatar"
+                             class="d-block w-px-100 h-px-100 rounded"
+                             id="uploadedAvatar" />
+                        <div class="button-wrapper">
+                            <label for="upload" class="btn btn-sm btn-primary me-3 mb-4" tabindex="0">
+                                <span class="d-none d-sm-block">Upload new photo</span>
+                                <i class="ri-upload-2-line d-block d-sm-none"></i>
+                                <input type="file"
+                                       id="upload"
+                                       class="account-file-input"
+                                       hidden
+                                       accept="image/png, image/jpeg" />
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-danger account-image-reset mb-4">
+                                <i class="ri-refresh-line d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Reset</span>
+                            </button>
+
+                            <div>Allowed JPG, GIF or PNG. Max size of 800K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <form id="formAccountSettings" method="POST" onsubmit="return false">
+                        <div class="row mt-1 g-5">
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <input class="form-control"
+                                           type="text"
+                                           id="firstName"
+                                           name="firstName"
+                                           placeholder="Khánh"
+                                           autofocus />
+                                    <label for="firstName">Tên</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <input class="form-control" type="text" name="lastName" id="lastName" placeholder="Lê" />
+                                    <label for="lastName">Họ</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <select id="language" class="select2 form-select">
+                                        <option value="en">Nam</option>
+                                        <option value="fr">Nữ</option>
+                                    </select>
+                                    <label for="language">Giới tính</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <select id="language" class="select2 form-select">
+                                        <option value="fr">User</option>
+                                        <option value="en">Admin</option>
+                                    </select>
+                                    <label for="language">Vai trò</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <input class="form-control"
+                                           type="text"
+                                           id="email"
+                                           name="email"
+                                           placeholder="john.doe@example.com" />
+                                    <label for="email">E-mail</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-password-toggle">
+                                    <div class="input-group input-group-merge">
+                                        <div class="form-floating form-floating-outline">
+                                            <input
+                                                type="password"
+                                                id="password"
+                                                class="form-control"
+                                                name="password"
+                                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                                aria-describedby="password" />
+                                            <label for="password">Password</label>
+                                        </div>
+                                        <span class="input-group-text cursor-pointer"><i class="ri-eye-off-line ri-20px"></i></span>
+                                    </div>
+                                </div>
+                                @* *@
+                                @* <div class="form-floating form-floating-outline"> *@
+                                @*     <input type="password" *@
+                                @*            class="form-control" *@
+                                @*            id="organization" *@
+                                @*            name="organization" *@
+                                @*            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" /> *@
+                                @*     <label for="organization">Mật khẩu</label> *@
+                                @* </div> *@
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button type="submit" class="btn btn-primary me-3">Lưu thay đổi</button>
+                            @* <button type="reset" class="btn btn-outline-secondary">Reset</button> *@
+                        </div>
+                    </form>
+                </div>
+                <!-- /Account -->
+            </div>
+             <div class="card">
+                 <h5 class="card-header">Delete Account</h5>
+                 <div class="card-body">
+                     <form id="formAccountDeactivation" onsubmit="return false">
+                         <div class="form-check mb-6 ms-3">
+                             <input class="form-check-input"
+                                    type="checkbox"
+                                    name="accountActivation"
+                                    id="accountActivation" />
+                             <label class="form-check-label" for="accountActivation">I confirm my account deactivation</label>
+                         </div>
+                         <button type="submit" class="btn btn-danger deactivate-account" disabled="disabled">
+                             Deactivate Account
+                         </button>
+                     </form>
+                 </div>
+             </div>
+        </div>
+    </div>
+</div>
+<!-- / Content -->
