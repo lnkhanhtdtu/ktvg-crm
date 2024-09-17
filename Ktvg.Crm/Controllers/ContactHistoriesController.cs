@@ -21,7 +21,12 @@ namespace Ktvg.Crm.Controllers
         // GET: ContactHistories
         public async Task<IActionResult> Index()
         {
-            var ktvgCrmContext = _context.ContactHistory.Include(c => c.ContactProject).Include(c => c.ContactPurpose).Include(c => c.CreatedByEmployee).Include(c => c.DeletedByEmployee).Include(c => c.ModifiedByEmployee);
+            var ktvgCrmContext = _context.ContactHistory
+                .Include(c => c.ContactProject)
+                .Include(c => c.ContactPurpose)
+                .Include(c => c.CreatedByEmployee)
+                .Include(c => c.DeletedByEmployee)
+                .Include(c => c.ModifiedByEmployee);
             return View(await ktvgCrmContext.ToListAsync());
         }
 

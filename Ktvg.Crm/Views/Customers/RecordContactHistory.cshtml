@@ -4,6 +4,10 @@
     ViewData["Title"] = "Dự án tiếp xúc";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.bootstrap5.min.css">
+}
+
 <!-- Content wrapper -->
 <div class="content-wrapper">
     <!-- Content -->
@@ -13,7 +17,7 @@
         <div class="card">
             <h5 class="card-header">Lịch sử tiếp xúc với KH: @(Model.FirstOrDefault()?.Customer?.CustomerName ?? "Chưa có")</h5>
             <div class="table-responsive text-nowrap">
-                <table class="table table-hover">
+                <table id="customerTable" class="table table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -36,6 +40,7 @@
                             <tr>
                                 <td>@(index++)</td>
                                 <td>
+                                    <i class="@item.ContactProject.Icon"></i>
                                     @Html.DisplayFor(modelItem => item.ContactProject.Name)
                                 </td>
                                 <td>
@@ -77,3 +82,18 @@
         <!--/ Basic Bootstrap Table -->
     </div>
 </div>
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#customerTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                }
+            });
+        });
+    </script>
+}

@@ -57,12 +57,6 @@ namespace Ktvg.Crm.Controllers
             return View(customer);
         }
 
-        // GET: Customers/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> Create(CustomerVM model)
         {
@@ -161,10 +155,20 @@ namespace Ktvg.Crm.Controllers
                 .Include(x => x.Customer)
                 .Include(x => x.ContactProject)
                 .Include(x => x.ContactPurpose)
-                .Where(x => x.IsDeleted == false && x.CustomerId == customerId)
+                .Where(x => x.IsDeleted != true && x.CustomerId == customerId)
                 .ToList();
 
             return View(contactHistory);
+        }
+
+        public IActionResult GetCustomerDetails(int id)
+        {
+            var customer = _context.Customer.Find(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            return Json(customer);
         }
 
         // GET: Customers/Edit/5

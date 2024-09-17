@@ -3,12 +3,14 @@
 <!-- Modal Đăng ký mới-->
 @using (Html.BeginForm("Create", "Customers", FormMethod.Post))
 {
+    <input type="hidden" asp-for="Id" />
+
     <div class="modal fade" id="installRegistrationModal" tabindex="-1" aria-labelledby="installRegistrationModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="installRegistrationModalLabel">TẠO MỚI</h5>
+                    <h5 class="modal-title fw-bold" id="installRegistrationModalLabel">@(Model.Id > 0 ? "CHỈNH SỬA: " + Model.CustomerName : "TẠO MỚI")</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -25,8 +27,7 @@
                         </div>
                         <div class="form-group col-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" asp-for="LocateType" id="LocateType2"
-                                    value="2">
+                                <input class="form-check-input" type="radio" asp-for="LocateType" id="LocateType2" value="2">
                                 <label class="form-check-label" for="LocateType2">
                                     Gia hạn
                                 </label>

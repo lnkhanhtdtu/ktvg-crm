@@ -8,7 +8,6 @@
 
 @section Styles{
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.bootstrap5.min.css">
-
 }
 
 <!-- Content wrapper -->
@@ -103,7 +102,7 @@
                                                 <i class="ri-history-line"></i> Lịch sử tiếp xúc
                                             </a>
                                             <li><hr class="dropdown-divider"></li>
-                                            <a class="dropdown-item" href="javascript:void(0);"><i class="ri-edit-2-line text-warning"></i> Sửa </a>
+                                            <a class="dropdown-item edit-customer" data-customer-id="@item.Id"><i class="ri-edit-2-line text-warning"></i> Sửa </a>
                                             <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line text-danger"></i> Xóa</a>
                                         </div>
                                     </div>
@@ -130,8 +129,7 @@
     <script src="https://cdn.datatables.net/2.1.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#customerTable').DataTable(
-                {
+            $('#customerTable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
                 }
@@ -159,8 +157,6 @@
             });
 
             $('select[name="InstallationType"]').change(function () {
-
-                console.log("paymentAmount:", $(this).val());
                 var paymentAmount = $(this).val() === 'GPS' ? 960000 : 1980000;
                 $('#PaymentAmount').val(paymentAmount);
             });
@@ -169,7 +165,48 @@
             $('#CustomerCode').on('input', function () {
                 $(this).prop('readonly', true);
             });
+
+            // Xử lý sự kiện khi nhấn nút "Sửa"
+            $('.edit-customer').click(function () {
+                var customerId = $(this).data('customer-id');
+                fetchCustomerDetails(customerId);
+            });
         });
+
+        function fetchCustomerDetails(customerId) {
+            $.ajax({
+                url: '/Customers/GetCustomerDetails',
+                type: 'GET',
+                data: { id: customerId },
+                success: function (response) {
+                    console.log("response: ", response);
+                    fillCustomerEditForm(response);
+                    $('#installRegistrationModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching customer details:', error);
+                }
+            });
+        }
+
+        function fillCustomerEditForm(data) {
+            $('#Id').val(data.id);
+            $('#CustomerCode').val(data.customerCode);
+            $('#CustomerName').val(data.customerName);
+            $('#PhoneNumber').val(data.phoneNumber);
+            $('#RegistrationDate').val(data.registrationDate);
+            $('#ProductName').val(data.productName);
+            $('#VehicleType').val(data.vehicleType);
+            $('#VehicleNumber').val(data.vehicleNumber);
+            $('#CustomerSource').val(data.customerSource);
+            $('#CustomerAddress').val(data.customerAddress);
+            $('#PaymentAmount').val(data.paymentAmount);
+            $('#DeviceInstalled').val(data.deviceInstalled);
+            $('#InstallationType').val(data.installationType);
+            $('#LocateType').val(data.locateType);
+            $('#Remark').val(data.remark);
+            $('#SendZaloConfirmation').prop('checked', data.sendZaloConfirmation);
+        }
 
         // Function to get the next customer code
         function getNextCustomerCode() {
@@ -187,6 +224,13 @@
         }
 
         $('#installRegistrationModal').on('show.bs.modal', function (event) {
+            if ($(event.relatedTarget).hasClass('edit-customer')) {
+
+                console.log("OK: ");
+
+                return;
+            }
+
             // Get today's date in YYYY-MM-DD format
             var today = new Date().toISOString().slice(0, 10);
 
@@ -201,10 +245,7 @@
 
             // Gọi hàm getNextCustomerCode và xử lý kết quả
             getNextCustomerCode().then(function (response) {
-                // Giả sử response trả về là { nextCode: "CUST-001" }
-
                 console.log("nextCode: ", response);
-
 
                 if (response && response.nextCode) {
 
