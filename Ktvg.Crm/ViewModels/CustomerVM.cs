@@ -7,6 +7,7 @@ namespace Ktvg.Crm.ViewModels
     {
         public int Id { get; set; }
 
+        [Display(Name = "Ngày tạo")]
         public DateTime CreatedDate { get; set; }
 
         [Display(Name = "Ngày đăng ký")]
@@ -47,6 +48,7 @@ namespace Ktvg.Crm.ViewModels
 
         public LocateType? LocateType { get; set; }
 
+        [Display(Name = "Ghi chú")]
         public string? Remark { get; set; }
 
         public bool SendZaloConfirmation { get; set; }

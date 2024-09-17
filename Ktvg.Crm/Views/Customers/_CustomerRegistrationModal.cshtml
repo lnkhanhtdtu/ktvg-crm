@@ -1,7 +1,7 @@
 ﻿@model Ktvg.Crm.ViewModels.CustomerVM
 
 <!-- Modal Đăng ký mới-->
-@using (Html.BeginForm("Create", "Customers", FormMethod.Post))
+@using (Html.BeginForm(Model.Id > 0 ? "Edit" : "Create", "Customers", FormMethod.Post))
 {
     <input type="hidden" asp-for="Id" />
 

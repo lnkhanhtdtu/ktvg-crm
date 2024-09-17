@@ -20,8 +20,10 @@
         <div class="card">
             <h5 class="card-header">
                 <button class="btn btn-outline-primary waves-effect"
-                        data-bs-toggle="modal"
-                        data-bs-target="#installRegistrationModal">
+                        id="create-customer"
+                        @* data-bs-toggle="modal" *@
+                        @* data-bs-target="#installRegistrationModal" *@
+                >
                     <i class="ri-add-circle-line"></i> &nbsp;Tạo mới
                 </button>
                 &nbsp;Khách hàng
@@ -72,6 +74,12 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                    <a href="tel:@item.PhoneNumber" class="text-primary ms-2" title="Gọi điện">
+                                        <i class="ri-phone-line"></i>
+                                    </a>
+                                    <a href="sms:@item.PhoneNumber" class="text-success ms-1" title="Gửi SMS">
+                                        <i class="ri-message-2-line"></i>
+                                    </a>
                                 </td>
                                 <td>
                                     @item.CreatedDate.ToString("dd/MM/yyyy")
@@ -128,10 +136,14 @@
     <script src="https://cdn.datatables.net/2.1.6/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#customerTable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                },
+                "scrollCollapse": true,
+                "fixedColumns": {
+                    right: 1
                 }
             });
         });
@@ -161,9 +173,10 @@
                 $('#PaymentAmount').val(paymentAmount);
             });
 
-            // Prevent manual editing of CustomerCode
-            $('#CustomerCode').on('input', function () {
-                $(this).prop('readonly', true);
+            // Xử lý sự kiện khi nhấn nút "Tạo"
+            $('#create-customer').click(function () {
+                $('#installRegistrationModal').modal('show');
+                fetchCreateCustomerDetails();
             });
 
             // Xử lý sự kiện khi nhấn nút "Sửa"
@@ -189,12 +202,54 @@
             });
         }
 
+        function fetchCreateCustomerDetails() {
+            // Get today's date in YYYY-MM-DD format
+            var today = new Date().toISOString().slice(0, 10);
+
+            // Clear all previous values
+            $('#RegistrationDate').val('');
+            $('#CustomerName').val('');
+            $('#PhoneNumber').val('');
+            $('#VehicleNumber').val('');
+            $('#exampleFormControlTextarea1').val('');
+            $('#CustomerSource').val('');
+            $('#CustomerAddress').val('');
+            $('#VehicleType').val('');
+            $('#InstallationType').val('');
+            $('#DeviceInstalled').val('');
+            $('#LocateType').val('');
+            $('#Remark').val('');
+
+            // Set default values
+            $('#Id').val(0);
+            $('#RegistrationDate').val(today);
+            $('#SendZaloConfirmation').prop('checked', true).val(true); // Check the checkbox
+            $('#PaymentAmount').val(960000);
+
+            // Gọi hàm getNextCustomerCode và xử lý kết quả
+            getNextCustomerCode().then(function (response) {
+                console.log("nextCode: ", response);
+
+                if (response && response.nextCode) {
+                    $('#CustomerCode').val(response.nextCode);
+                } else {
+                    console.error('Invalid response:', response);
+                }
+            }).catch(function (error) {
+                console.error('Error in AJAX request:', error);
+            });
+        }
+
         function fillCustomerEditForm(data) {
+
+            $('#installRegistrationModalLabel').text("SỬA: " + data.customerName);
+
+
             $('#Id').val(data.id);
             $('#CustomerCode').val(data.customerCode);
             $('#CustomerName').val(data.customerName);
             $('#PhoneNumber').val(data.phoneNumber);
-            $('#RegistrationDate').val(data.registrationDate);
+            $('#RegistrationDate').val(new Date(data.registrationDate).toISOString().split('T')[0]);
             $('#ProductName').val(data.productName);
             $('#VehicleType').val(data.vehicleType);
             $('#VehicleNumber').val(data.vehicleNumber);
@@ -203,9 +258,9 @@
             $('#PaymentAmount').val(data.paymentAmount);
             $('#DeviceInstalled').val(data.deviceInstalled);
             $('#InstallationType').val(data.installationType);
-            $('#LocateType').val(data.locateType);
+            $(`input[name="LocateType"][value="${data.locateType}"]`).prop('checked', true);
             $('#Remark').val(data.remark);
-            $('#SendZaloConfirmation').prop('checked', data.sendZaloConfirmation);
+            $('#SendZaloConfirmation').prop('checked', false);
         }
 
         // Function to get the next customer code
@@ -223,40 +278,6 @@
             });
         }
 
-        $('#installRegistrationModal').on('show.bs.modal', function (event) {
-            if ($(event.relatedTarget).hasClass('edit-customer')) {
-
-                console.log("OK: ");
-
-                return;
-            }
-
-            // Get today's date in YYYY-MM-DD format
-            var today = new Date().toISOString().slice(0, 10);
-
-            // Set default values
-            $('#RegistrationDate').val(today);
-            $('#CustomerName').val(''); // Clear any previous input
-            $('#PhoneNumber').val('');
-            $('#VehicleNumber').val('');
-            $('#SendZaloConfirmation').prop('checked', true).val(true); // Check the checkbox
-            $('#exampleFormControlTextarea1').val('');
-            $('#PaymentAmount').val(960000);
-
-            // Gọi hàm getNextCustomerCode và xử lý kết quả
-            getNextCustomerCode().then(function (response) {
-                console.log("nextCode: ", response);
-
-                if (response && response.nextCode) {
-
-                    $('#CustomerCode').val(response.nextCode);
-                } else {
-                    console.error('Invalid response:', response);
-                }
-            }).catch(function (error) {
-                console.error('Error in AJAX request:', error);
-            });
-        });
 
         $('#installRegistrationModal').find('.btn-primary').click(function () {
             var isValid = true;

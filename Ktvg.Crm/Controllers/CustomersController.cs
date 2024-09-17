@@ -4,6 +4,7 @@ using Ktvg.Crm.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Ktvg.Crm.Controllers
 {
@@ -56,57 +57,88 @@ namespace Ktvg.Crm.Controllers
 
             return View(customer);
         }
+        private int GetCreatedById()
+        {
+            string accountIdString = User.FindFirstValue("accountId");
+            if (int.TryParse(accountIdString, out int createdById))
+            {
+                return createdById;
+            }
+            throw new InvalidOperationException("Invalid or missing accountId");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(CustomerVM model)
         {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             try
             {
-                if (ModelState.IsValid)
+                var customer = model.Id > 0 ? await _context.Customer.FindAsync(model.Id) : new Customer();
+                if (customer == null && model.Id > 0)
                 {
-                    var customer = new Customer()
-                    {
-                        CreatedDate = DateTime.Now,
-                        IsDeleted = false,
-                        // CreatedById = UserSession.Instance.UserData.Id,
-
-                        RegistrationDate = model.RegistrationDate,
-                        ProductName = model.InstallationType == "GPS"
-                            ? "Thiết bị giám sát hành trình"
-                            : "Camera nghị định",
-                        VehicleType = model.VehicleType,
-                        VehicleNumber = model.VehicleNumber,
-                        CustomerSource = model.CustomerSource,
-                        CustomerCode = model.CustomerCode,
-                        CustomerName = model.CustomerName,
-                        PhoneNumber = model.PhoneNumber,
-                        CustomerAddress = model.CustomerAddress,
-                        DeviceInstalled = model.DeviceInstalled,
-                        InstallationType = model.InstallationType,
-                        PaymentAmount = model.PaymentAmount,
-                        Remark = model.Remark,
-                        LocateType = model.LocateType,
-                        // ExpirationDate = model.RegistrationDate.AddYears(1).AddDays(-1)
-                    };
-
-                    if (model.SendZaloConfirmation)
-                    {
-                        await _zaloService.SendZaloZns(customer);
-                    }
-
-                    // Lưu dữ liệu vào cơ sở dữ liệu
-                    _context.Customer.Add(customer);
-                    await _context.SaveChangesAsync();
-
-                    TempData["CreateRegistrationSuccess"] = "Tạo khách hàng thành công.";
+                    return NotFound();
                 }
+
+                UpdateCustomerFromModel(customer, model);
+
+                if (model.Id == 0)
+                {
+                    _context.Customer.Add(customer);
+                }
+                else
+                {
+                    _context.Update(customer);
+                }
+
+                await _context.SaveChangesAsync();
+
+                if (model.SendZaloConfirmation)
+                {
+                    await _zaloService.SendZaloZns(customer);
+                }
+
+                TempData["RegistrationMessage"] = model.Id > 0 ? "Cập nhật khách hàng thành công." : "Tạo khách hàng thành công.";
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                TempData["CreateRegistrationError"] = "Tạo khách hàng thất bại.";
+                TempData["RegistrationError"] = "Xử lý khách hàng thất bại.";
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private void UpdateCustomerFromModel(Customer customer, CustomerVM model)
+        {
+            customer.RegistrationDate = model.RegistrationDate;
+            customer.ProductName = model.InstallationType == "GPS" ? "Thiết bị giám sát hành trình" : "Camera nghị định";
+            customer.VehicleType = model.VehicleType;
+            customer.VehicleNumber = model.VehicleNumber;
+            customer.CustomerSource = model.CustomerSource;
+            customer.CustomerCode = model.CustomerCode;
+            customer.CustomerName = model.CustomerName;
+            customer.PhoneNumber = model.PhoneNumber;
+            customer.CustomerAddress = model.CustomerAddress;
+            customer.DeviceInstalled = model.DeviceInstalled;
+            customer.InstallationType = model.InstallationType;
+            customer.PaymentAmount = model.PaymentAmount;
+            customer.Remark = model.Remark;
+            customer.LocateType = model.LocateType;
+
+            if (customer.Id == 0)
+            {
+                customer.CreatedById = GetCreatedById();
+                customer.CreatedDate = DateTime.Now;
+                customer.IsDeleted = false;
+            }
+            else
+            {
+                customer.ModifiedDate = DateTime.Now;
+                customer.ModifiedById = GetCreatedById();
+            }
         }
 
         [HttpPost]
