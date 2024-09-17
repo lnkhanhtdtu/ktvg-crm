@@ -21,7 +21,8 @@ namespace Ktvg.Crm.Controllers
         // GET: ZaloOAuths
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ZaloOAuth.ToListAsync());
+            // return View(await _context.ZaloOAuth.ToListAsync());
+            return View(new ZaloOAuth());
         }
 
         // GET: ZaloOAuths/Details/5

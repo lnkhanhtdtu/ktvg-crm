@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ktvg.Crm.Models;
+using Ktvg.Crm.ViewModels;
 
 namespace Ktvg.Crm.Controllers
 {
@@ -21,11 +22,17 @@ namespace Ktvg.Crm.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            ViewData["ProjectList"] = _context.Set<ContactProject>().ToList(); // new SelectList(, "Id", "Name");
+            // Load necessary data for dropdowns
+            ViewData["ProjectList"] = await _context.Set<ContactProject>().ToListAsync();
+            ViewData["ContactProjects"] = new SelectList(await _context.Set<ContactProject>().ToListAsync(), "Id", "Name");
+            ViewData["ContactPurposes"] = new SelectList(await _context.Set<ContactPurpose>().ToListAsync(), "Id", "Name");
 
-            var result = await _context.Customer
+            // Fetch and convert customer data
+            var customers = await _context.Customer
+                .Select(x => Customer.ConvertToCustomerVM(x))
                 .ToListAsync();
-            return View(result);
+
+            return View(customers);
         }
 
         // GET: Customers/Details/5
@@ -52,29 +59,111 @@ namespace Ktvg.Crm.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
-            ViewData["CreatedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id");
-            ViewData["DeletedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id");
-            ViewData["ModifiedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id");
             return View();
         }
 
-        // POST: Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RegistrationDate,ProductName,VehicleType,VehicleNumber,CustomerName,CustomerAddress,PhoneNumber,IsActive,PaymentAmount,HasZalo,DeviceInstalled,InstallationType,LocateType,IsSendZalo,IsSendSms,Id,CreatedDate,ModifiedDate,DeletedDate,IsDeleted,Remark,CreatedById,ModifiedById,DeletedById")] Customer customer)
+        public IActionResult Create(CustomerVM model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var customer = new Customer()
+                    {
+                        CreatedDate = DateTime.Now,
+                        IsDeleted = false,
+                        // CreatedById = UserSession.Instance.UserData.Id,
+
+                        RegistrationDate = model.RegistrationDate,
+                        ProductName = model.InstallationType == "GPS"
+                            ? "Thiết bị giám sát hành trình"
+                            : "Camera nghị định",
+                        VehicleType = model.VehicleType,
+                        VehicleNumber = model.VehicleNumber,
+                        CustomerSource = model.CustomerSource,
+                        CustomerCode = model.CustomerCode,
+                        CustomerName = model.CustomerName,
+                        PhoneNumber = model.PhoneNumber,
+                        CustomerAddress = model.CustomerAddress,
+                        DeviceInstalled = model.DeviceInstalled,
+                        InstallationType = model.InstallationType,
+                        PaymentAmount = model.PaymentAmount,
+                        Remark = model.Remark,
+                        LocateType = model.LocateType,
+                        // ExpirationDate = model.RegistrationDate.AddYears(1).AddDays(-1)
+                    };
+
+                    if (model.SendZaloConfirmation)
+                    {
+                        // await _zaloService.SendZaloZns(locate);
+                    }
+
+                    // Lưu dữ liệu vào cơ sở dữ liệu
+                    _context.Customer.Add(customer);
+                    _context.SaveChanges();
+
+                    TempData["CreateRegistrationSuccess"] = "Tạo khách hàng thành công.";
+                }
             }
-            ViewData["CreatedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id", customer.CreatedById);
-            ViewData["DeletedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id", customer.DeletedById);
-            ViewData["ModifiedById"] = new SelectList(_context.Set<Employee>(), "Id", "Id", customer.ModifiedById);
-            return View(customer);
+            catch (Exception e)
+            {
+                TempData["CreateRegistrationError"] = "Tạo khách hàng thất bại.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public IActionResult RecordContactHistory(ContactHistoryVM model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var contactHistory = new ContactHistory()
+                    {
+                        CreatedDate = DateTime.Now,
+                        IsDeleted = false,
+                        // CreatedById = UserSession.Instance.UserData.Id,
+
+                        ContactProjectId = model.ContactProjectId,
+                        ContactPurposeId = model.ContactPurposeId,
+                        CustomerId = model.CustomerId,
+                        Reason = model.Reason,
+                        StartDate = model.StartDate,
+                        RescheduleDate = model.RescheduleDate,
+                        Status = model.Status,
+                        Result = model.Result,
+                        Remark = model.Remark,
+                    };
+
+                    // Lưu dữ liệu vào cơ sở dữ liệu
+                    _context.ContactHistory.Add(contactHistory);
+                    _context.SaveChanges();
+
+                    TempData["CreateRegistrationSuccess"] = "Tạo lịch sử thành công.";
+                }
+            }
+            catch (Exception e)
+            {
+                TempData["CreateRegistrationError"] = "Tạo lịch sử thất bại.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult RecordContactHistory(int customerId)
+        {
+            var contactHistory = _context.ContactHistory
+                .Include(x => x.Customer)
+                .Include(x => x.ContactProject)
+                .Include(x => x.ContactPurpose)
+                .Where(x => x.IsDeleted == false && x.CustomerId == customerId)
+                .ToList();
+
+            return View(contactHistory);
         }
 
         // GET: Customers/Edit/5
@@ -174,5 +263,40 @@ namespace Ktvg.Crm.Controllers
         {
             return _context.Customer.Any(e => e.Id == id);
         }
+
+        [HttpGet]
+        public JsonResult GetNextCustomerCode()
+        {
+            var lastCustomer = _context.Customer
+                .OrderByDescending(c => c.CustomerCode)
+                .FirstOrDefault();
+
+            string nextCustomerCode;
+
+            if (lastCustomer == null)
+            {
+                // Nếu không có khách hàng nào, bắt đầu từ mã mặc định
+                nextCustomerCode = "KH00001";
+            }
+            else
+            {
+                // Lấy phần số của CustomerCode sau ký tự "KH"
+                string lastCode = lastCustomer.CustomerCode;
+                if (lastCode.Length > 2 && int.TryParse(lastCode.Substring(2), out int lastNumber))
+                {
+                    // Tăng số lên 1 và tạo mã khách hàng mới
+                    nextCustomerCode = $"KH{(lastNumber + 1):D5}";
+                }
+                else
+                {
+                    // Nếu mã không hợp lệ, bắt đầu từ mã mặc định
+                    nextCustomerCode = "KH00001";
+                }
+            }
+
+            // Trả về mã khách hàng mới dưới dạng JSON
+            return Json(new { nextCode = nextCustomerCode });
+        }
+
     }
 }

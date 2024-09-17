@@ -14,12 +14,16 @@ namespace Ktvg.Crm.Models
         [ForeignKey("ContactPurpose")]
         public int? ContactPurposeId { get; set; }
         public ContactPurpose? ContactPurpose { get; set; }
-
+        
+        [ForeignKey("Customer")]
+        public int? CustomerId { get; set; }
+        public Customer? Customer { get; set; }
+        
         public string? Reason { get; set; }
         public DateTime StartDate { get; set; } // Bắt đầu
         public DateTime? RescheduleDate { get; set; } // Lịch hẹn
         public ContactStatus? Status { get; set; }
-
+        
         public enum ContactStatus
         {
             Start = 1,

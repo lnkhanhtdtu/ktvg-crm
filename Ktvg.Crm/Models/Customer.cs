@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Ktvg.Crm.ViewModels;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ktvg.Crm.Models
@@ -52,6 +53,30 @@ namespace Ktvg.Crm.Models
         public bool? IsSendZalo { get; set; }
 
         public bool? IsSendSms { get; set; }
+
+        public static CustomerVM ConvertToCustomerVM(Customer customer)
+        {
+            return new CustomerVM
+            {
+                Id = customer.Id,
+                CreatedDate = customer.CreatedDate,
+                RegistrationDate = customer.RegistrationDate,
+                ProductName = customer.ProductName,
+                VehicleType = customer.VehicleType,
+                VehicleNumber = customer.VehicleNumber,
+                CustomerSource = customer.CustomerSource,
+                CustomerCode = customer.CustomerCode,
+                CustomerName = customer.CustomerName,
+                CustomerAddress = customer.CustomerAddress,
+                PhoneNumber = customer.PhoneNumber,
+                PaymentAmount = customer.PaymentAmount,
+                DeviceInstalled = customer.DeviceInstalled,
+                InstallationType = customer.InstallationType,
+                LocateType = customer.LocateType,
+                Remark = customer.Remark
+            };
+        }
+
     }
 
     public enum LocateType

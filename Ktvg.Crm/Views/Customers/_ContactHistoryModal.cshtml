@@ -1,0 +1,95 @@
+﻿@model Ktvg.Crm.ViewModels.ContactHistoryVM
+
+@{
+}
+<!-- Modal Đăng ký mới-->
+@using (Html.BeginForm("RecordContactHistory", "Customers", FormMethod.Post))
+{
+    <div class="modal fade" id="contactHistoryModal" tabindex="-1" aria-labelledby="contactHistoryModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="contactHistoryModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+
+                    <input type="hidden" asp-for="CustomerId" />
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <select asp-for="ContactProjectId" class="form-control" asp-items="ViewBag.ContactProjects"></select>
+                                <label asp-for="ContactProjectId">Dự án tiếp xúc</label>
+                            </div>
+                        </div>
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <select asp-for="ContactPurposeId" class="form-control" asp-items="ViewBag.ContactPurposes"></select>
+                                <label asp-for="ContactPurposeId">Mục đích</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea type="number" class="form-control h-px-100" asp-for="Reason" contactHistory></textarea>
+                                <label asp-for="Reason">Lý do</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="date" class="form-control" asp-for="StartDate">
+                                <label asp-for="StartDate">Bắt đầu</label>
+                            </div>
+                        </div>
+
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input type="date" class="form-control" asp-for="RescheduleDate">
+                                <label asp-for="RescheduleDate">Lịch hẹn</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea type="number" class="form-control h-px-100" asp-for="Result" contactHistory></textarea>
+                                <label asp-for="Result">Kết quả</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-6 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea type="number" class="form-control h-px-100" asp-for="Remark" contactHistory></textarea>
+                                <label asp-for="Remark">Ghi chú</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-start">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+
+    </script>
+}

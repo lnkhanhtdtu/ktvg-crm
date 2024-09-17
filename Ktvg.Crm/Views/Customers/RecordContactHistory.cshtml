@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Ktvg.Crm.Models.ContactHistory>
+
+@{
+    ViewData["Title"] = "Dự án tiếp xúc";
+}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">Lịch sử tiếp xúc với KH: @(Model.FirstOrDefault()?.Customer?.CustomerName ?? "Chưa có")</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Dự án</th>
+                            <th>Mục đích</th>
+                            <th>Lý do</th>
+                            <th>Bắt đầu</th>
+                            <th>Lịch hẹn</th>
+                            <th>Kết quả</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @{
+                            var index = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(index++)</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ContactProject.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ContactPurpose.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Reason)
+                                </td>
+                                <td>
+                                    @item.StartDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @item.RescheduleDate?.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Result)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Remark)
+                                </td>
+                                @* <td> *@
+                                @*     <div class="dropdown"> *@
+                                @*         <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"> *@
+                                @*             <i class="ri-more-2-line"></i> *@
+                                @*         </button> *@
+                                @*         <div class="dropdown-menu"> *@
+                                @*             <a class="dropdown-item" href="javascript:void(0);"><i class="ri-pencil-line me-1"></i> Edit</a> *@
+                                @*             <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line me-1"></i> Delete</a> *@
+                                @*         </div> *@
+                                @*     </div> *@
+                                @* </td> *@
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/ Basic Bootstrap Table -->
+    </div>
+</div>

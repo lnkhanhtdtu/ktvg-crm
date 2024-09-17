@@ -41,6 +41,9 @@ namespace Ktvg.Crm.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
@@ -65,6 +68,9 @@ namespace Ktvg.Crm.Migrations
                     b.Property<DateTime?>("RescheduleDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Result")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -78,6 +84,8 @@ namespace Ktvg.Crm.Migrations
                     b.HasIndex("ContactPurposeId");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("DeletedById");
 
@@ -125,6 +133,9 @@ namespace Ktvg.Crm.Migrations
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Result")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
@@ -170,6 +181,9 @@ namespace Ktvg.Crm.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Result")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -263,6 +277,9 @@ namespace Ktvg.Crm.Migrations
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Result")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("VehicleNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -324,6 +341,9 @@ namespace Ktvg.Crm.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Result")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
@@ -465,6 +485,10 @@ namespace Ktvg.Crm.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("Ktvg.Crm.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
                     b.HasOne("Ktvg.Crm.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedById");
@@ -478,6 +502,8 @@ namespace Ktvg.Crm.Migrations
                     b.Navigation("ContactPurpose");
 
                     b.Navigation("CreatedByEmployee");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("DeletedByEmployee");
 
