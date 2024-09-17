@@ -1,157 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using Ktvg.Crm.Integrations.ZaloAPI;
 using Ktvg.Crm.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ktvg.Crm.Controllers
 {
     public class ZaloOAuthsController : Controller
     {
         private readonly KtvgCrmContext _context;
+        private readonly IZaloService _zaloService;
 
-        public ZaloOAuthsController(KtvgCrmContext context)
+        public ZaloOAuthsController(KtvgCrmContext context, IZaloService zaloService)
         {
             _context = context;
+            _zaloService = zaloService;
         }
 
         // GET: ZaloOAuths
         public async Task<IActionResult> Index()
         {
-            // return View(await _context.ZaloOAuth.ToListAsync());
-            return View(new ZaloOAuth());
+            var zalo = InitializeZaloModel();
+
+            var zaloOAuth = _context.ZaloOAuth.OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+
+            zalo.IsOAuth = zaloOAuth != null && !zaloOAuth.IsExpire();
+
+            return View(zalo);
         }
 
-        // GET: ZaloOAuths/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet]
+        [Route("admin/zalo/callback")]
+        public async Task<ActionResult> Callback(string oa_id, string code)
         {
-            if (id == null)
+            var zalo = InitializeZaloModel();
+
+            if (!string.IsNullOrEmpty(code))
             {
-                return NotFound();
-            }
+                var zaloOAuthResponse = await _zaloService.GetAccessTokenFirstTime(code);
 
-            var zaloOAuth = await _context.ZaloOAuth
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (zaloOAuth == null)
-            {
-                return NotFound();
-            }
-
-            return View(zaloOAuth);
-        }
-
-        // GET: ZaloOAuths/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ZaloOAuths/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CreatedDate,AccessToken,RefreshToken,ExpireIn")] ZaloOAuth zaloOAuth)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(zaloOAuth);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(zaloOAuth);
-        }
-
-        // GET: ZaloOAuths/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var zaloOAuth = await _context.ZaloOAuth.FindAsync(id);
-            if (zaloOAuth == null)
-            {
-                return NotFound();
-            }
-            return View(zaloOAuth);
-        }
-
-        // POST: ZaloOAuths/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CreatedDate,AccessToken,RefreshToken,ExpireIn")] ZaloOAuth zaloOAuth)
-        {
-            if (id != zaloOAuth.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (zaloOAuthResponse != null && !string.IsNullOrEmpty(zaloOAuthResponse.AccessToken))
                 {
-                    _context.Update(zaloOAuth);
-                    await _context.SaveChangesAsync();
+                    zalo.IsOAuth = true;
+                    await SaveZaloOAuth(zaloOAuthResponse);
+                    ViewBag.Message = "Xác thực thành công";
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!ZaloOAuthExists(zaloOAuth.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ViewBag.Message = "Xác thực thất bại";
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(zaloOAuth);
+            else
+            {
+                ViewBag.Message = "Xác thực thất bại";
+            }
+
+            return View("Index", zalo);
         }
 
-        // GET: ZaloOAuths/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        private ZaloModel InitializeZaloModel()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var zaloOAuth = await _context.ZaloOAuth
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (zaloOAuth == null)
-            {
-                return NotFound();
-            }
-
-            return View(zaloOAuth);
+            var permissionUrl = "https://oauth.zaloapp.com/v4/oa/permission?app_id=2117687196653409715&redirect_uri=https%3A%2F%2Fktvinagroup.com%2Fadmin%2Fzalo%2Fcallback";
+            return new ZaloModel() { PermissionUrl = permissionUrl, IsOAuth = false };
         }
 
-        // POST: ZaloOAuths/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        private async Task SaveZaloOAuth(ZaloOAuthResponse zaloOAuthResponse)
         {
-            var zaloOAuth = await _context.ZaloOAuth.FindAsync(id);
-            if (zaloOAuth != null)
-            {
-                _context.ZaloOAuth.Remove(zaloOAuth);
-            }
+            var now = DateTime.Now;
 
+            var zaloOAuth = new ZaloOAuth()
+            {
+                CreatedDate = now,
+                AccessToken = zaloOAuthResponse.AccessToken,
+                RefreshToken = zaloOAuthResponse.RefreshToken,
+                ExpireIn = zaloOAuthResponse.ExpireIn
+            };
+
+            _context.ZaloOAuth.Add(zaloOAuth);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ZaloOAuthExists(int id)
-        {
-            return _context.ZaloOAuth.Any(e => e.Id == id);
         }
     }
 }

@@ -1,10 +1,13 @@
+using Ktvg.Crm.Factories;
 using Ktvg.Crm.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddDbContext<KtvgCrmContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("KtvgCrmContext") ?? throw new InvalidOperationException("Connection string 'KtvgCrmContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("KtvgCrmContext")
+                         ?? throw new InvalidOperationException("Connection string 'KtvgCrmContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -13,9 +16,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
     options.LoginPath = "/Home/Login";
+    options.LogoutPath = "/Home/Logout";
     options.AccessDeniedPath = "/AccessDenied";
     options.ExpireTimeSpan = TimeSpan.FromDays(1);
 });
+
+RepositoryFactory.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 app.Initialize();

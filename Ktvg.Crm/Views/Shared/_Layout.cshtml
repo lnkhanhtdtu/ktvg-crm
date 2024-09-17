@@ -44,6 +44,8 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="~/Content/assets/js/config.js"></script>
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
@@ -236,7 +238,7 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="Account">
                                             <i class="ri-user-3-line ri-22px me-2"></i>
                                             <span class="align-middle">Hồ sơ của tôi</span>
                                         </a>
@@ -252,10 +254,13 @@
                                     </li>
                                     <li>
                                         <div class="d-grid px-4 pt-2 pb-1">
-                                            <a class="btn btn-danger d-flex" href="javascript:void(0);">
-                                                <small class="align-middle">Đăng xuất</small>
-                                                <i class="ri-logout-box-r-line ms-2 ri-16px"></i>
-                                            </a>
+                                            @using (Html.BeginForm("Logout", "Home", FormMethod.Post))
+                                            {
+                                                <button type="submit" class="btn btn-danger d-flex w-100">
+                                                    <small class="align-middle">Đăng xuất</small>
+                                                    <i class="ri-logout-box-r-line ms-2 ri-16px"></i>
+                                                </button>
+                                            }
                                         </div>
                                     </li>
                                 </ul>

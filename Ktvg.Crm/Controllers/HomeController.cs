@@ -12,10 +12,12 @@ namespace Ktvg.Crm.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly KtvgCrmContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, KtvgCrmContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [Authorize]
@@ -26,7 +28,50 @@ namespace Ktvg.Crm.Controllers
 
         public IActionResult Account()
         {
-            return View();
+            var accountId = User.FindFirstValue("accountId");
+
+            var account = _context.Employee
+                .Select(x => new EmployeeVM()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Sex = x.Sex,
+                    PhoneNumber = x.PhoneNumber,
+                    Username = x.Username,
+                    Password = x.Password,
+                    Role = x.Role
+                }).FirstOrDefault(x => x.Id.ToString() == accountId);
+
+            return View(account);
+        }
+
+        public IActionResult SaveAccount(EmployeeVM employeeVM)
+        {
+            var account = _context.Employee.FirstOrDefault(x => x.IsDeleted != true && x.Id == employeeVM.Id);
+            if (account == null)
+            {
+                return View("Account", employeeVM);
+            }
+
+            if (employeeVM.FirstName != null)
+                account.FirstName = employeeVM.FirstName;
+            if (employeeVM.LastName != null)
+                account.LastName = employeeVM.LastName;
+            if (employeeVM.Sex != null)
+                account.Sex = employeeVM.Sex;
+            if (employeeVM.PhoneNumber != null)
+                account.PhoneNumber = employeeVM.PhoneNumber;
+            if (employeeVM.Username != null)
+                account.Username = employeeVM.Username;
+            if (employeeVM.Password != null)
+                account.Password = employeeVM.Password;
+            if (employeeVM.Role != null)
+                account.Role = employeeVM.Role;
+
+            _context.SaveChanges();
+
+            return View("Account", employeeVM);
         }
 
         public IActionResult Privacy()
@@ -53,50 +98,23 @@ namespace Ktvg.Crm.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVM model, string? returnUrl)
         {
-            // if (ModelState.IsValid)
-            // {
-            //     if (username.Equals("admin") && password.Equals("admin"))
-            //     {
-            //         // Session["UserName"] = objUser.UserName;
-            //         return RedirectToAction("Index");
-            //         // return RedirectToAction("UserDashBoard");
-            //     }
-            // }
-            //
-            // // Đăng nhập không thành công
-            // TempData["LoginError"] = "Tên đăng nhập hoặc mật khẩu không chính xác.";
-            //
-            // return View();
             ViewBag.returnUrl = returnUrl;
             if (ModelState.IsValid)
             {
-                // var khachHang = db.KhachHangs.SingleOrDefault(kh => kh.MaKh == model.UserName);
-                // if (khachHang == null)
-                // {
-                //     ModelState.AddModelError("loi", "Không có khách hàng này");
-                // }
-                // else
-                // {
-                // if (!khachHang.HieuLuc)
-                // {
-                //     ModelState.AddModelError("loi", "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.");
-                // }
-                // else
-                // {
-                if (!model.UserName.Equals("admin") || !model.Password.Equals("admin"))
+                var account = _context.Employee.FirstOrDefault(x => x.IsDeleted != false && model.UserName == x.Username && model.Password == x.Password);
+                if (account == null)
                 {
-                    ModelState.AddModelError("loi", "Sai thông tin đăng nhập");
+                    TempData["LoginError"] = "Tên đăng nhập hoặc mật khẩu không chính xác.";
                 }
                 else
                 {
-                    var claims = new List<Claim> {
-                                new Claim(ClaimTypes.Email, model.UserName),
-                                new Claim(ClaimTypes.Name, "Nhựt Khánh"),
-                                new Claim("Roles", "Quản trị viên"),
-
-                                //claim - role động
-                                // new Claim(ClaimTypes.Role, "Admin")
-                            };
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Email, model.UserName),
+                        new Claim(ClaimTypes.Name, account.FirstName),
+                        new Claim("accountId", account.Id.ToString()),
+                        new Claim("Roles", account.Role)
+                    };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -119,22 +137,18 @@ namespace Ktvg.Crm.Controllers
                         return Redirect("/");
                     }
                 }
-                // }
-                // }
             }
             return View();
         }
 
-        #endregion
-
-        public ActionResult UserDashBoard()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
         {
-            // if (Session["UserID"] != null)
-            // {
-            //     return View("Index");
-            // }
-
-            return RedirectToAction("Login");
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
+
+        #endregion
     }
 }

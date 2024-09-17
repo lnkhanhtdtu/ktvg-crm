@@ -6,6 +6,11 @@
     var message = TempData["CreateRegistrationSuccess"]?.ToString() ?? TempData["CreateRegistrationError"]?.ToString() ?? "";
 }
 
+@section Styles{
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.bootstrap5.min.css">
+
+}
+
 <!-- Content wrapper -->
 <div class="content-wrapper">
     <!-- Content -->
@@ -15,7 +20,7 @@
         <!-- Basic Bootstrap Table -->
         <div class="card">
             <h5 class="card-header">
-                <button class="btn btn-outline-primary waves-effect" 
+                <button class="btn btn-outline-primary waves-effect"
                         data-bs-toggle="modal"
                         data-bs-target="#installRegistrationModal">
                     <i class="ri-add-circle-line"></i> &nbsp;Tạo mới
@@ -121,23 +126,23 @@
 
 @section Scripts
 {
-    @* TODO: Cấu hình DataTable js *@
-    @* <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script> *@
-    @* <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script> *@
-    @* <script> *@
-    @*     $(document).ready(function() { *@
-    @*         $('#customerTable').DataTable({ *@
-    @*             "language": { *@
-    @*                 "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json" *@
-    @*             } *@
-    @*         }); *@
-    @*     }); *@
-    @* </script> *@
-
+    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#contactHistoryModal').on('show.bs.modal', function() {
-                $('.project-button').click(function() {
+            $('#customerTable').DataTable(
+                {
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#contactHistoryModal').on('show.bs.modal', function () {
+                $('.project-button').click(function () {
                     var projectId = $(this).data('project-id');
                     var projectName = $(this).data('project-name');
                     var customerId = $(this).data('customer-id');
@@ -161,21 +166,21 @@
             });
 
             // Prevent manual editing of CustomerCode
-            $('#CustomerCode').on('input', function() {
+            $('#CustomerCode').on('input', function () {
                 $(this).prop('readonly', true);
             });
         });
 
-// Function to get the next customer code
+        // Function to get the next customer code
         function getNextCustomerCode() {
             return $.ajax({
                 url: '/Customers/GetNextCustomerCode',  // Kiểm tra URL có đúng không
                 type: 'GET',
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     console.log("Success fetching customer code:", response);
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('Error fetching next customer code:', error);
                 }
             });
@@ -194,20 +199,20 @@
             $('#exampleFormControlTextarea1').val('');
             $('#PaymentAmount').val(960000);
 
-// Gọi hàm getNextCustomerCode và xử lý kết quả
-            getNextCustomerCode().then(function(response) {
+            // Gọi hàm getNextCustomerCode và xử lý kết quả
+            getNextCustomerCode().then(function (response) {
                 // Giả sử response trả về là { nextCode: "CUST-001" }
 
                 console.log("nextCode: ", response);
 
 
                 if (response && response.nextCode) {
-                    
+
                     $('#CustomerCode').val(response.nextCode);
                 } else {
                     console.error('Invalid response:', response);
                 }
-            }).catch(function(error) {
+            }).catch(function (error) {
                 console.error('Error in AJAX request:', error);
             });
         });
@@ -218,17 +223,18 @@
 
             // Kiểm tra các trường bắt buộc
             $('#installRegistrationModal .modal-body :input[required]').each(function () {
+                var label = $(this).closest('.form-floating').find('label');
                 if ($(this).val() === '') {
                     isValid = false;
-                    errorMessage += "Vui lòng nhập " + $(this).prev('label').text().trim() + "\n";
+                    errorMessage += "Vui lòng nhập " + label.text().trim() + "\n";
                 }
             });
 
-            // Kiểm tra định dạng số điện thoại (ví dụ: chỉ cho phép số)
+            // Kiểm tra định dạng số điện thoại (ví dụ: +84xxxxxxxxx)
             var PhoneNumber = $('#PhoneNumber').val();
-            if (!/^\d+$/.test(PhoneNumber)) {
+            if (!/^\+84\d{9}$/.test(PhoneNumber)) {
                 isValid = false;
-                errorMessage += "Số điện thoại không hợp lệ. Vui lòng chỉ nhập số.\n";
+                errorMessage += "Số điện thoại không hợp lệ. Vui lòng nhập theo định dạng +84xxxxxxxxx.\n";
             }
 
             // Kiểm tra số tiền thanh toán (nếu có nhập) là số dương
@@ -273,4 +279,3 @@
 
     </script>
 }
- 

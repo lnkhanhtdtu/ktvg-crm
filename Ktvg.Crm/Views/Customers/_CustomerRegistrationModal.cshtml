@@ -13,7 +13,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     <div class="row">
                         <div class="form-group col-3">
                             <div class="form-check">
@@ -42,7 +41,7 @@
                             @* TODO: Chuyển thành combobox *@
                             <div class="form-floating form-floating-outline">
                                 <input type="text" class="form-control" asp-for="CustomerSource"
-                                    placeholder="Ví dụ: Công ty ABC" required>
+                                       placeholder="Ví dụ: CÔNG TY TNHH ĐẦU TƯ VÀ PHÁT TRIỂN KT VINA GROUP" required>
                                 <label asp-for="CustomerName">Nguồn khách hàng <span class="text-danger">*</span></label>
                             </div>
                         </div>
@@ -69,9 +68,8 @@
                         <div class="col mb-6 mt-2">
                             <div class="form-floating form-floating-outline">
                                 <input type="text" class="form-control" asp-for="PhoneNumber"
-                                    placeholder="Ví dụ: 0818123456" required>
-                                <label asp-for="PhoneNumber">Số điện thoại (0xxxxxxxx)<span
-                                        class="text-danger">*</span></label>
+                                       placeholder="Ví dụ: +84969697931" required>
+                                <label asp-for="PhoneNumber">Số điện thoại (+84xxxxxxxxx)<span class="text-danger">*</span></label>
                             </div>
                         </div>
                     </div>
@@ -80,7 +78,7 @@
                         <div class="col mb-6 mt-2">
                             <div class="form-floating form-floating-outline">
                                 <input type="text" class="form-control" asp-for="CustomerAddress"
-                                    placeholder="Ví dụ: 123 Nguyễn Văn Cừ, Quận 5, TP.HCM">
+                                       placeholder="Ví dụ: Lầu 5, số 15 Trần Khắc Chân, Phường Tân Định, Quận 1, Thành phố Hồ Chí Minh">
                                 <label asp-for="CustomerAddress">Địa chỉ KH </label>
                             </div>
                         </div>
@@ -90,7 +88,7 @@
                         <div class="col mb-6 mt-2">
                             <div class="form-floating form-floating-outline">
                                 <input type="text" class="form-control" asp-for="VehicleType"
-                                    placeholder="Ví dụ: Toyota Vios">
+                                       placeholder="Ví dụ: Hyundai Stargazer">
                                 <label asp-for="VehicleType">Tên dòng xe</label>
                             </div>
                         </div>
@@ -148,7 +146,7 @@
                     <div class="row">
                         <div class="col mb-6 mt-2">
                             <div class="form-floating form-floating-outline">
-                                <textarea type="number" class="form-control" asp-for="Remark" rows="3"></textarea>
+                                <textarea type="number" class="form-control h-px-100" asp-for="Remark" rows="3"></textarea>
                                 <label asp-for="Remark">Ghi chú</label>
                             </div>
                         </div>
@@ -161,20 +159,18 @@
                             <label class="form-check-label" asp-for="SendZaloConfirmation">
                                 Gửi tin xác nhận thanh toán (Zalo)
                                 
-                                @* @if ((bool)ViewData["IsValidToken"]) *@
-                                @* { *@
-                                @* <span class="text-success font-italic">(Đã kết nối Zalo OA)</span> *@
-                                @* } *@
-                                @* else *@
-                                @* { *@
+                                @if ((bool)ViewData["IsValidToken"])
+                                {
+                                <span class="text-success font-italic">(Đã kết nối)</span>
+                                }
+                                else
+                                {
                                 <span class="text-danger font-italic">
-                                    (Cần kết nối Zalo OA
+                                    (Cần kết nối 
                                     @* TODO: Cần xử lý lại link*@
-                                    <a class="fw-bold"
-                                        href="https://oauth.zaloapp.com/v4/oa/permission?app_id=2117687196653409715&redirect_uri=https%3A%2F%2Fktvinagroup.com%2Fadmin%2Fzalo%2Fcallback"
-                                        target="_blank">Kết nối</a>)
+                                    <a class="fw-bold" asp-controller="ZaloOAuths" asp-action="Index" target="_blank">Kết nối</a>)
                                 </span>
-                                // }
+                                }
                             </label>
                         </div>
                     </div>

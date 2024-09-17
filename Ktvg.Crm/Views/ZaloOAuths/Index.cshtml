@@ -1,53 +1,57 @@
-﻿@model IEnumerable<Ktvg.Crm.Models.ZaloOAuth>
+﻿@model Ktvg.Crm.Integrations.ZaloAPI.ZaloModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Zalo";
 }
 
-<h1>Index</h1>
+<!-- Content -->
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-md-12">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AccessToken)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RefreshToken)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpireIn)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AccessToken)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefreshToken)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpireIn)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            <div class="card mb-6">
+                <!-- Account -->
+                <div class="card-body">
+                    <div class="d-flex mb-4 align-items-center">
+                        <div class="flex-shrink-0">
+                            <img src="~/Content/assets/img/icons/brands/zalo.png"
+                                 alt="facebook"
+                                 class="me-4"
+                                 height="32" />
+                        </div>
+                        <div class="flex-grow-1 row align-items-center">
+                            <div class="col-7">
+                                <h6 class="mb-0">Zalo</h6>
+                                @if (Model.IsOAuth)
+                                {
+                                    <small class="text-success">Đã kết nối</small>
+                                }
+                                else
+                                {
+                                    <small class="text-danger">Chưa kết nối</small>
+                                }
+                            </div>
+                            <div class="col-5 text-end">
+                                @if (Model.IsOAuth)
+                                {
+                                    <a class="btn btn-outline-success btn-icon" href="#" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Ngắt kết nối">
+                                        <i class="ri-link-unlink ri-22px"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-outline-secondary btn-icon" href="@Model.PermissionUrl" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Kết nối">
+                                        <i class="ri-link ri-22px"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /Account -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / Content -->

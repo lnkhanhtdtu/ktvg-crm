@@ -19,5 +19,6 @@ namespace Ktvg.Crm.ViewModels
 
         public string? Result { get; set; }
         public string? Remark { get; set; }
+        public bool SendZaloConfirmation { get; set; }
     }
 }

@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Ktvg.Crm.Integrations.ZaloAPI;
+using Ktvg.Crm.Models;
+using Ktvg.Crm.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Ktvg.Crm.Models;
-using Ktvg.Crm.ViewModels;
 
 namespace Ktvg.Crm.Controllers
 {
     public class CustomersController : Controller
     {
         private readonly KtvgCrmContext _context;
+        private readonly IZaloService _zaloService;
 
-        public CustomersController(KtvgCrmContext context)
+        public CustomersController(KtvgCrmContext context, IZaloService zaloService)
         {
             _context = context;
+            _zaloService = zaloService;
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
+            ViewData["IsValidToken"] = await _zaloService.CheckAccessToken();
+
             // Load necessary data for dropdowns
             ViewData["ProjectList"] = await _context.Set<ContactProject>().ToListAsync();
             ViewData["ContactProjects"] = new SelectList(await _context.Set<ContactProject>().ToListAsync(), "Id", "Name");
@@ -63,7 +64,7 @@ namespace Ktvg.Crm.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CustomerVM model)
+        public async Task<IActionResult> Create(CustomerVM model)
         {
             try
             {
@@ -96,12 +97,12 @@ namespace Ktvg.Crm.Controllers
 
                     if (model.SendZaloConfirmation)
                     {
-                        // await _zaloService.SendZaloZns(locate);
+                        await _zaloService.SendZaloZns(customer);
                     }
 
                     // Lưu dữ liệu vào cơ sở dữ liệu
                     _context.Customer.Add(customer);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     TempData["CreateRegistrationSuccess"] = "Tạo khách hàng thành công.";
                 }
@@ -115,7 +116,7 @@ namespace Ktvg.Crm.Controllers
         }
 
         [HttpPost]
-        public IActionResult RecordContactHistory(ContactHistoryVM model)
+        public async Task<IActionResult> RecordContactHistory(ContactHistoryVM model)
         {
             try
             {
@@ -140,7 +141,7 @@ namespace Ktvg.Crm.Controllers
 
                     // Lưu dữ liệu vào cơ sở dữ liệu
                     _context.ContactHistory.Add(contactHistory);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     TempData["CreateRegistrationSuccess"] = "Tạo lịch sử thành công.";
                 }
