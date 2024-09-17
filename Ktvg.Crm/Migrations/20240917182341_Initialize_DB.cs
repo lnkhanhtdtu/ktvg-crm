@@ -240,10 +240,12 @@ namespace Ktvg.Crm.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ContactProjectId = table.Column<int>(type: "int", nullable: true),
                     ContactPurposeId = table.Column<int>(type: "int", nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RescheduleDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: true),
+                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -267,6 +269,12 @@ namespace Ktvg.Crm.Migrations
                         column: x => x.ContactPurposeId,
                         principalSchema: "dbo",
                         principalTable: "ContactPurposes",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ContactHistories_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalSchema: "dbo",
+                        principalTable: "Customers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ContactHistories_Employees_CreatedById",
@@ -333,6 +341,12 @@ namespace Ktvg.Crm.Migrations
                 schema: "dbo",
                 table: "ContactHistories",
                 column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContactHistories_CustomerId",
+                schema: "dbo",
+                table: "ContactHistories",
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContactHistories_DeletedById",

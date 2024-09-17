@@ -104,7 +104,7 @@ namespace KTVG.Integrations.ZaloAPI
             try
             {
                 var accessToken = await GetAccessTokenFromDb();
-                var templateId = model.LocateType == LocateType.NewRegistration ? "362076" : "364206"; // Xác nhận thanh toán (Đăng ký mới) | Xác nhận thanh toán (Gia hạn 1)
+                var templateId = "366904"; //model.LocateType == LocateType.NewRegistration ? "362076" : "364206"; // Xác nhận thanh toán (Đăng ký mới) | Xác nhận thanh toán (Gia hạn 1)
                 // Gửi yêu cầu tới Zalo với accessToken từ DB
                 var result = await SendZaloRequest(model, accessToken, templateId);
 
@@ -183,15 +183,13 @@ namespace KTVG.Integrations.ZaloAPI
         {
             var payload = new PaymentConfirmationNewRegistration()
             {
-                Phone = "+84" + model.PhoneNumber.Substring(1),
+                Phone = model.PhoneNumber.Substring(1),
                 TemplateId = templateId,
-                TemplateData = new TemplateData()
+                TemplateData = new TemplateDataNew()
                 {
-                    RegistrationDate = model.RegistrationDate.ToString("dd/MM/yyyy"),
-                    PaymentAmount = model.PaymentAmount ?? 0,
-                    CustomerName = model.CustomerName,
-                    VehicleNumber = model.VehicleNumber ?? "",
-                    RegistrationNewDate = model.RegistrationDate.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy")
+                    NgayBatDauDv = model.RegistrationDate.ToString("dd/MM/yyyy"),
+                    MaDonHang = $"DH{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    CustomerName = model.CustomerName
                 }
             };
 
@@ -261,7 +259,7 @@ namespace KTVG.Integrations.ZaloAPI
             public string TemplateId { get; set; }
 
             [JsonProperty("template_data")]
-            public TemplateData TemplateData { get; set; }
+            public TemplateDataNew TemplateData { get; set; }
 
             [JsonProperty("tracking_id")]
             public string TrackingId { get; set; }
@@ -283,6 +281,18 @@ namespace KTVG.Integrations.ZaloAPI
 
             [JsonProperty("so_tien")]
             public decimal PaymentAmount { get; set; }
+        }
+
+        public class TemplateDataNew
+        {
+            [JsonProperty("ngay_bat_dau_dv")]
+            public string NgayBatDauDv { get; set; }
+
+            [JsonProperty("ma_don_hang")]
+            public string MaDonHang { get; set; }
+
+            [JsonProperty("customerName")]
+            public string CustomerName { get; set; }
         }
     }
 }

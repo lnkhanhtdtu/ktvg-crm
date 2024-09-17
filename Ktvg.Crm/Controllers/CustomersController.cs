@@ -24,32 +24,6 @@ namespace Ktvg.Crm.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            var customers = new List<CustomerVM>();
-
-            for (int i = 1; i <= 50; i++)
-            {
-                customers.Add(new CustomerVM
-                {
-                    Id = i,
-                    CreatedDate = DateTime.Now.AddDays(-i),
-                    RegistrationDate = DateTime.Now.AddDays(-i - 1),
-                    ProductName = $"Sản phẩm {i}",
-                    VehicleType = $"Loại xe {i}",
-                    VehicleNumber = $"Số xe {i}",
-                    CustomerSource = $"Nguồn {i}",
-                    CustomerCode = $"KH{i:D4}",
-                    CustomerName = $"Khách hàng {i}",
-                    CustomerAddress = $"Địa chỉ {i}",
-                    PhoneNumber = $"0123456789{i:D2}",
-                    PaymentAmount = i * 1000,
-                    DeviceInstalled = $"Thiết bị {i}",
-                    InstallationType = i % 2 == 0 ? "GPS" : "Camera",
-                    LocateType = (LocateType)(i % 2),
-                    Remark = $"Ghi chú {i}",
-                    SendZaloConfirmation = i % 2 == 0
-                });
-            }
-
             ViewData["IsValidToken"] = await _zaloService.CheckAccessToken();
 
             // Load necessary data for dropdowns
@@ -58,9 +32,10 @@ namespace Ktvg.Crm.Controllers
             ViewData["ContactPurposes"] = new SelectList(await _context.Set<ContactPurpose>().ToListAsync(), "Id", "Name");
 
             // Fetch and convert customer data
-            // var customers = await _context.Customer
-            //     .Select(x => Customer.ConvertToCustomerVM(x))
-            //     .ToListAsync();
+            var customers = await _context.Customer
+                .Where(x => x.IsDeleted != true)
+                .Select(x => Customer.ConvertToCustomerVM(x))
+                .ToListAsync();
 
             return View(customers);
         }

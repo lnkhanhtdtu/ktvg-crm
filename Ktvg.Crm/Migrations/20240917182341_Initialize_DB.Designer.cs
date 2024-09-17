@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ktvg.Crm.Migrations
 {
     [DbContext(typeof(KtvgCrmContext))]
-    [Migration("20240917170710_Add_Column_Result")]
-    partial class Add_Column_Result
+    [Migration("20240917182341_Initialize_DB")]
+    partial class Initialize_DB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
