@@ -23,11 +23,12 @@ namespace Ktvg.Crm.Models
         public DateTime StartDate { get; set; } // Bắt đầu
         public DateTime? RescheduleDate { get; set; } // Lịch hẹn
         public ContactStatus? Status { get; set; }
-        
-        public enum ContactStatus
-        {
-            Start = 1,
-            Complete
-        }
+        public string? Result { get; set; }
+    }
+
+    public enum ContactStatus
+    {
+        Start = 1,
+        Complete
     }
 }

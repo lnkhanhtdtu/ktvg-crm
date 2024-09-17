@@ -19,8 +19,7 @@ namespace Ktvg.Crm.Models
 
         [Display(Name = "Ghi chú")]
         public string? Remark { get; set; }
-        public string? Result { get; set; }
-
+        
         [ForeignKey(nameof(CreatedByEmployee))]
         public int? CreatedById { get; set; }
 

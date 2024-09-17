@@ -1,9 +1,11 @@
 ﻿using Ktvg.Crm.Integrations.ZaloAPI;
 using Ktvg.Crm.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ktvg.Crm.Controllers
 {
+    [Authorize]
     public class ZaloOAuthsController : Controller
     {
         private readonly KtvgCrmContext _context;

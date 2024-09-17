@@ -111,7 +111,7 @@
                                             </a>
                                             <li><hr class="dropdown-divider"></li>
                                             <a class="dropdown-item edit-customer" data-customer-id="@item.Id"><i class="ri-edit-2-line text-warning"></i> Sửa </a>
-                                            <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line text-danger"></i> Xóa</a>
+                                            @* <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line text-danger"></i> Xóa</a> *@
                                         </div>
                                     </div>
                                 </td>
@@ -139,7 +139,19 @@
         $(document).ready(function () {
             $('#customerTable').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                    "sProcessing": "Đang xử lý...",
+                    "sLengthMenu": "Xem _MENU_ mục",
+                    "sZeroRecords": "Không tìm thấy dòng nào phù hợp",
+                    "sInfo": "Đang xem _START_ đến _END_ / _TOTAL_ mục",
+                    "sInfoEmpty": "Đang xem 0 đến 0 / 0 mục",
+                    "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                    "sSearch": "Tìm:",
+                    "oPaginate": {
+                        "sFirst": "<<",
+                        "sPrevious": "<",
+                        "sNext": ">",
+                        "sLast": ">>"
+                    }
                 },
                 "scrollCollapse": true,
                 "fixedColumns": {
@@ -165,6 +177,8 @@
                     $('#contactHistoryModalLabel').text(projectName + ": " + customerName);
                     $('#ContactProjectId').val(projectId);
                     $('#CustomerId').val(customerId);
+
+                    $('#StartDate').val(new Date().toISOString().split('T')[0]);
                 });
             });
 
@@ -183,6 +197,17 @@
             $('.edit-customer').click(function () {
                 var customerId = $(this).data('customer-id');
                 fetchCustomerDetails(customerId);
+            });
+
+            $('select[name="ContactProjectId"]').change(function () {
+                // Lấy văn bản của tùy chọn được chọn
+                var selectedText = $(this).find("option:selected").text();
+
+                // Lấy văn bản hiện tại của tiêu đề modal
+                var currentText = $('#contactHistoryModalLabel').text().split(":")[1].trim();
+
+                // Cập nhật văn bản tiêu đề modal
+                $('#contactHistoryModalLabel').text(selectedText + ": " + currentText);
             });
         });
 

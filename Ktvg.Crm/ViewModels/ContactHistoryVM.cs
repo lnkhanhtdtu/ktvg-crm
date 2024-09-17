@@ -1,4 +1,4 @@
-﻿using static Ktvg.Crm.Models.ContactHistory;
+﻿using Ktvg.Crm.Models;
 
 namespace Ktvg.Crm.ViewModels
 {

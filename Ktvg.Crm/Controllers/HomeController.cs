@@ -26,6 +26,7 @@ namespace Ktvg.Crm.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Account()
         {
             var accountId = User.FindFirstValue("accountId");
@@ -46,6 +47,7 @@ namespace Ktvg.Crm.Controllers
             return View(account);
         }
 
+        [Authorize]
         public IActionResult SaveAccount(EmployeeVM employeeVM)
         {
             var account = _context.Employee.FirstOrDefault(x => x.IsDeleted != true && x.Id == employeeVM.Id);
@@ -96,9 +98,9 @@ namespace Ktvg.Crm.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVM model, string? returnUrl)
+        public async Task<IActionResult> Login(LoginVM model, string? ReturnUrl)
         {
-            ViewBag.returnUrl = returnUrl;
+            ViewBag.returnUrl = ReturnUrl;
             if (ModelState.IsValid)
             {
                 var account = _context.Employee.FirstOrDefault(x => x.IsDeleted != false && model.UserName == x.Username && model.Password == x.Password);
@@ -128,9 +130,9 @@ namespace Ktvg.Crm.Controllers
 
                     await HttpContext.SignInAsync(claimsPrincipal); // , authProps);
 
-                    if (Url.IsLocalUrl(returnUrl))
+                    if (Url.IsLocalUrl(ReturnUrl))
                     {
-                        return Redirect(returnUrl);
+                        return Redirect(ReturnUrl);
                     }
                     else
                     {

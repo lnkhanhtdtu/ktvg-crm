@@ -66,6 +66,17 @@ namespace Ktvg.Crm.Utilities
                     dbContext.AddRange(units);
                 }
 
+                if (!dbContext.Employee.Any())
+                {
+                    var units = new List<Employee>
+                    {
+                        new Employee() { CreatedDate = now, FirstName = "Nhựt Khánh", LastName = "Lê", Sex = true, PhoneNumber = "+84818597397", Username = "admin", Password = "admin", Role = "Quản trị viên"},
+                        new Employee() { CreatedDate = now, FirstName = "User", LastName = "", Sex = true, PhoneNumber = "+84818597397", Username = "user", Password = "123456", Role = "Người dùng"}
+                    };
+
+                    dbContext.AddRange(units);
+                }
+
                 dbContext.SaveChanges();
             }
         }

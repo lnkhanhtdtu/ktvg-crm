@@ -206,7 +206,30 @@ namespace KTVG.Integrations.ZaloAPI
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<ZaloOAuthResponse>(responseString);
+            var result = JsonConvert.DeserializeObject<ZaloOAuthResponse>(responseString);
+
+            await RecordMessageLog(model.Id, jsonPayload, responseString, result);
+
+            return result;
+        }
+
+        private async Task RecordMessageLog(int customerId, string requestPayload, string responsePayload, ZaloOAuthResponse result)
+        {
+            var log = new MessageLog()
+            {
+                CustomerId = customerId,
+                Type = MessageType.Zalo,
+                Recipient = "",
+                Content = "",
+                SentTime = DateTime.Now,
+                RequestPayload = requestPayload,
+                ResponsePayload = responsePayload,
+                IsSuccessful = result.Error == 0,
+                ErrorMessage = result.Message
+            };
+
+            _context.MessageLog.Add(log);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<string> GetRefreshTokenFromDb()

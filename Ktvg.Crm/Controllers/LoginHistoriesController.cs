@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Ktvg.Crm.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Ktvg.Crm.Models;
 
 namespace Ktvg.Crm.Controllers
 {
+    [Authorize]
     public class LoginHistoriesController : Controller
     {
         private readonly KtvgCrmContext _context;
