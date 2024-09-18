@@ -1,4 +1,5 @@
-﻿using Ktvg.Crm.Integrations.ZaloAPI;
+﻿using Azure.Core;
+using Ktvg.Crm.Integrations.ZaloAPI;
 using Ktvg.Crm.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,8 @@ namespace Ktvg.Crm.Controllers
             var zaloOAuth = _context.ZaloOAuth.OrderByDescending(x => x.CreatedDate).FirstOrDefault();
 
             zalo.IsOAuth = zaloOAuth != null && !zaloOAuth.IsExpire();
+            zalo.AccessToken = zaloOAuth.AccessToken;
+            zalo.RefreshToken = zaloOAuth.RefreshToken;
 
             return View(zalo);
         }
@@ -58,6 +61,23 @@ namespace Ktvg.Crm.Controllers
             return View("Index", zalo);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SaveAccessTokenManually(ZaloModel zalo)
+        {
+            var zaloOAuth = new ZaloOAuth()
+            {
+                CreatedDate = DateTime.Now,
+                AccessToken = zalo.AccessToken,
+                RefreshToken = zalo.RefreshToken,
+                ExpireIn = "90000"
+            };
+
+            _context.ZaloOAuth.Add(zaloOAuth);
+            await _context.SaveChangesAsync();
+            
+            return View("Index", zalo);
+        }
+
         private ZaloModel InitializeZaloModel()
         {
             var permissionUrl = "https://oauth.zaloapp.com/v4/oa/permission?app_id=2117687196653409715&redirect_uri=https%3A%2F%2Fktvinagroup.com%2Fadmin%2Fzalo%2Fcallback";
@@ -66,11 +86,9 @@ namespace Ktvg.Crm.Controllers
 
         private async Task SaveZaloOAuth(ZaloOAuthResponse zaloOAuthResponse)
         {
-            var now = DateTime.Now;
-
             var zaloOAuth = new ZaloOAuth()
             {
-                CreatedDate = now,
+                CreatedDate = DateTime.Now,
                 AccessToken = zaloOAuthResponse.AccessToken,
                 RefreshToken = zaloOAuthResponse.RefreshToken,
                 ExpireIn = zaloOAuthResponse.ExpireIn

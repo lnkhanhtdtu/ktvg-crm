@@ -4,54 +4,126 @@
     ViewData["Title"] = "Zalo OA";
 }
 
-<!-- Content -->
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="row">
-        <div class="col-md-12">
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
 
-            <div class="card mb-6">
-                <!-- Account -->
-                <div class="card-body">
-                    <div class="d-flex mb-4 align-items-center">
-                        <div class="flex-shrink-0">
-                            <img src="~/Content/assets/img/icons/brands/zalo.png"
-                                 alt="facebook"
-                                 class="me-4"
-                                 height="32" />
-                        </div>
-                        <div class="flex-grow-1 row align-items-center">
-                            <div class="col-7">
-                                <h6 class="mb-0">Zalo</h6>
-                                @if (Model.IsOAuth)
-                                {
-                                    <small class="text-success">Đã kết nối</small>
-                                }
-                                else
-                                {
-                                    <small class="text-danger">Chưa kết nối</small>
-                                }
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="card-header">
+                                <h5 class="mb-1">Cấu hình tự động</h5>
                             </div>
-                            <div class="col-5 text-end">
-                                @if (Model.IsOAuth)
-                                {
-                                    <a class="btn btn-outline-success btn-icon" href="#" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Ngắt kết nối">
-                                        <i class="ri-link-unlink ri-22px"></i>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a class="btn btn-outline-secondary btn-icon" href="@Model.PermissionUrl" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Kết nối">
-                                        <i class="ri-link ri-22px"></i>
-                                    </a>
-                                }
+                            <div class="card-body">
+                                <div class="d-flex mb-4 align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <img src="~/Content/assets/img/icons/brands/zalo.png"
+                                             alt="facebook"
+                                             class="me-4"
+                                             height="32" />
+                                    </div>
+                                    <div class="flex-grow-1 row align-items-center">
+                                        <div class="col-7">
+                                            <h6 class="mb-0">Zalo</h6>
+                                            @if (Model.IsOAuth)
+                                            {
+                                                <small class="text-success">Đã kết nối</small>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-danger">Chưa kết nối</small>
+                                            }
+                                        </div>
+                                        <div class="col-5 text-end">
+                                            @if (Model.IsOAuth)
+                                            {
+                                                <a class="btn btn-outline-success btn-icon" href="#" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Ngắt kết nối">
+                                                    <i class="ri-link-unlink ri-22px"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-outline-secondary btn-icon" href="@Model.PermissionUrl" target="_blank" data-bs-toggle="tooltip" data-bs-placement="right" title="Kết nối">
+                                                    <i class="ri-link ri-22px"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-12">
+                            <div class="card-header">
+                                <h5 class="mb-1">Cấu hình thủ công</h5>
+                                <p class="mb-1 card-subtitle mt-0">
+                                    Truy cập <a class="fw-bold" href="https://developers.zalo.me/tools/explorer/2117687196653409715" target="_blank">link</a> để lấy OA Access Token
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4 align-items-center">
+                                    @using (Html.BeginForm("SaveAccessTokenManually", "ZaloOAuths", FormMethod.Post))
+                                    {
+                                        <div class="row">
+                                            <div class="col-auto mb-6 mt-2">
+                                                <button type="button" class="btn btn-secondary" onclick="pasteToInput('AccessTokenInput')" style="margin-left: 5px;">
+                                                    <i class="ri-clipboard-line"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-10 mb-6 mt-2">
+                                                <div class="form-floating form-floating-outline">
+                                                    <input type="text" class="form-control" id="AccessTokenInput" asp-for="AccessToken" placeholder="ByiNQaQncnSfpHXaHxMH5I_17652ek57QfK-JM6opqDBlKrjJ">
+                                                    <label asp-for="AccessToken">Access token</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-auto mb-6 mt-2">
+                                                <button type="button" class="btn btn-secondary" onclick="pasteToInput('RefreshTokenInput')" style="margin-left: 5px;">
+                                                    <i class="ri-clipboard-line"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-10 mb-6 mt-2">
+                                                <div class="form-floating form-floating-outline">
+                                                    <input type="text" class="form-control" id="RefreshTokenInput" asp-for="RefreshToken" placeholder="z10G5FdUs6ho5XyQ-DhIQFGQ6n_zpOumk7C4C-xWZ06RQ">
+                                                    <label asp-for="RefreshToken">Refresh token</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-outline-primary waves-effect">Thêm</button>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- /Account -->
             </div>
         </div>
     </div>
+    <!-- / Content -->
 </div>
-<!-- / Content -->
+<!-- Content wrapper -->
+@section Scripts
+{
+    <script>
+    function pasteToInput(inputId) {
+        navigator.clipboard.readText()
+            .then(text => {
+                const inputElement = document.getElementById(inputId);
+                if (inputElement) {
+                    inputElement.value = text;
+                } else {
+                    console.error(`No input found with ID: ${inputId}`);
+                }
+            })
+            .catch(err => {
+                console.error('Failed to read clipboard contents: ', err);
+            });
+    }
+</script>
+}
