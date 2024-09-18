@@ -10,17 +10,19 @@ namespace Ktvg.Crm.Controllers
     public class ContactPurposesController : Controller
     {
         private readonly KtvgCrmContext _context;
+        private readonly IContactPurposeService _contactPurposeService;
 
-        public ContactPurposesController(KtvgCrmContext context)
+        public ContactPurposesController(KtvgCrmContext context, IContactPurposeService contactPurposeService)
         {
             _context = context;
+            _contactPurposeService = contactPurposeService;
         }
 
         // GET: ContactPurposes
         public async Task<IActionResult> Index()
         {
-            var ktvgCrmContext = _context.ContactPurpose.Include(c => c.CreatedByEmployee).Include(c => c.DeletedByEmployee).Include(c => c.ModifiedByEmployee);
-            return View(await ktvgCrmContext.ToListAsync());
+            var result = await _contactPurposeService.GetAllAsync();
+            return View(result);
         }
 
         // GET: ContactPurposes/Details/5

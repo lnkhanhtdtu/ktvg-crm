@@ -10,17 +10,19 @@ namespace Ktvg.Crm.Controllers
     public class ContactProjectsController : Controller
     {
         private readonly KtvgCrmContext _context;
+        private readonly IContactProjectService _contactProjectService;
 
-        public ContactProjectsController(KtvgCrmContext context)
+        public ContactProjectsController(KtvgCrmContext context, IContactProjectService contactProjectService)
         {
             _context = context;
+            _contactProjectService = contactProjectService;
         }
 
         // GET: ContactProjects
         public async Task<IActionResult> Index()
         {
-            var ktvgCrmContext = _context.ContactProject.Include(c => c.CreatedByEmployee).Include(c => c.DeletedByEmployee).Include(c => c.ModifiedByEmployee);
-            return View(await ktvgCrmContext.ToListAsync());
+            var result = await _contactProjectService.GetAllAsync();
+            return View(result);
         }
 
         // GET: ContactProjects/Details/5

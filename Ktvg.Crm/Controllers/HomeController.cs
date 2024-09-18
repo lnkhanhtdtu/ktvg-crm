@@ -11,13 +11,13 @@ namespace Ktvg.Crm.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly KtvgCrmContext _context;
+        private readonly IAccountService _accountService;
 
-        public HomeController(ILogger<HomeController> logger, KtvgCrmContext context)
+        public HomeController(KtvgCrmContext context, IAccountService accountService)
         {
-            _logger = logger;
             _context = context;
+            _accountService = accountService;
         }
 
         [Authorize]
@@ -29,51 +29,17 @@ namespace Ktvg.Crm.Controllers
         [Authorize]
         public IActionResult Account()
         {
-            var accountId = User.FindFirstValue("accountId");
+            int accountId = Convert.ToInt32(User.FindFirstValue("accountId"));
+            var result = _accountService.GetAccount(accountId);
 
-            var account = _context.Employee
-                .Select(x => new EmployeeVM()
-                {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Sex = x.Sex,
-                    PhoneNumber = x.PhoneNumber,
-                    Username = x.Username,
-                    Password = x.Password,
-                    Role = x.Role
-                }).FirstOrDefault(x => x.Id.ToString() == accountId);
-
-            return View(account);
+            return View(result);
         }
 
         [Authorize]
         public IActionResult SaveAccount(EmployeeVM employeeVM)
         {
-            var account = _context.Employee.FirstOrDefault(x => x.IsDeleted != true && x.Id == employeeVM.Id);
-            if (account == null)
-            {
-                return View("Account", employeeVM);
-            }
-
-            if (employeeVM.FirstName != null)
-                account.FirstName = employeeVM.FirstName;
-            if (employeeVM.LastName != null)
-                account.LastName = employeeVM.LastName;
-            if (employeeVM.Sex != null)
-                account.Sex = employeeVM.Sex;
-            if (employeeVM.PhoneNumber != null)
-                account.PhoneNumber = employeeVM.PhoneNumber;
-            if (employeeVM.Username != null)
-                account.Username = employeeVM.Username;
-            if (employeeVM.Password != null)
-                account.Password = employeeVM.Password;
-            if (employeeVM.Role != null)
-                account.Role = employeeVM.Role;
-
-            _context.SaveChanges();
-
-            return View("Account", employeeVM);
+            var result = _accountService.SaveAccount(employeeVM);
+            return View("Account", result);
         }
 
         public IActionResult Privacy()
